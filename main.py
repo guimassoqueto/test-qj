@@ -1,24 +1,18 @@
-from __future__ import annotations
 import pandas as pd
-from os.path import exists, join
-from os import makedirs
 import csv
+from zipfile import ZipFile
 
 
-INPUT_FILES_FOLDER = "app/input"
-OUTPUT_FILES_FOLDER = "app/output"
+def extract_data_from_zip(zip_file: str = 'dados.zip') -> None:
+    '''
+    Extrai todos os dados do arquivo zip.
 
-
-def make_output_dir(output_folder: str) -> None:
-    """
-    Cria uma pasta de output se a mesma ainda não existir.
-    Depende da constante OUTPUT_FILES_FOLDER estar definida
-
-    Args:
-        output_folder (str): nome da pasta de output a ser criada.
-    """
-    if not exists(output_folder):
-        makedirs(output_folder)
+    Argumentos:
+        zip_file (str): o caminho + nome do arquivo do arquivo zip a ser descompactado. 
+    '''
+    z = ZipFile(zip_file, 'r')
+    z.extractall()
+    z.close()
 
 
 def evaluate_data(
@@ -42,17 +36,15 @@ def evaluate_data(
     Retorno:
         str: caminho relativo definindo local aonde o arquivo de saída foi salvo.
     """
-    input_origin_data = join(INPUT_FILES_FOLDER, origin_data_csv)
-    types_data = join(INPUT_FILES_FOLDER, types_csv)
-    df1 = pd.read_csv(input_origin_data)
-    df2 = pd.read_csv(types_data).rename(columns={"id": "tipo"})
+    df1 = pd.read_csv(origin_data_csv)
+    df2 = pd.read_csv(types_csv).rename(columns={"id": "tipo"})
     df3 = pd.merge(df1, df2, on="tipo", how="outer")
     df3["created_at"] = pd.to_datetime(df3["created_at"])
     df3.query("status == 'CRITICO'", inplace=True)
     df3.sort_values(by="created_at", ascending=False, inplace=True)
     df3 = df3.rename(columns={"nome": "nome_tipo"})
 
-    csv_output_file = join(OUTPUT_FILES_FOLDER, output_csv)
+    csv_output_file = output_csv
     df3.to_csv(csv_output_file, index=False)
     return csv_output_file
 
@@ -70,9 +62,8 @@ def generate_sql_output(
     with open(csv_output_file, "r", encoding="utf-8") as csv_file:
         csv_reader = csv.DictReader(csv_file)
         header_row = csv_reader.fieldnames
-        output_filepath = join(OUTPUT_FILES_FOLDER, sql_output_file_name)
 
-        f = open(output_filepath, "a")
+        f = open(sql_output_file_name, "a")
 
         for row in csv_reader:
             f.write("INSERT INTO dados_finais")
@@ -86,7 +77,7 @@ def generate_sql_output(
 
 def main() -> None:
     try:
-        make_output_dir(OUTPUT_FILES_FOLDER)
+        extract_data_from_zip()
         csv_output_file = evaluate_data()
         generate_sql_output(csv_output_file)
     except Exception as e:

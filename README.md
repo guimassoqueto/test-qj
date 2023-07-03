@@ -2,26 +2,18 @@
 Desafio Quite Já
 
 ## Requisitos
-* [Gerenciador de Dependências Poetry](https://python-poetry.org/)
 * [Python 3.10](https://www.python.org/downloads/)
 
+### Dependências
+* [Pandas](https://pypi.org/project/pandas/)
+
+### Dependências (pré-instaladas com o Python)
+* [csv](https://docs.python.org/3.10/library/csv.html)
+* [zipfile](https://docs.python.org/3.10/library/zipfile.html)
 
 ## Como rodar a aplicação
+Na raíz do projeto:
 
-1. inicie o ambiente virtual
 ```bash
-poetry shell
+python main.py
 ```
-
-2. instale as dependências
-```bash
-poetry install
-```
-
-3. rode a aplicação
-```bash
-poetry run app
-```
-
-Os arquivos de saída (sql e csv) serão gerados por padrão na pasta app/output. 
-Para mudar a saída acesse o arquivo main.py e leia as docstrings das funções.
