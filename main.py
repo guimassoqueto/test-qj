@@ -31,7 +31,7 @@ def evaluate_data(
     Argumentos:
         origin_data_csv (str): nome do csv de origem, por padrão origem-dados.csv.
         types_csv (str): nome do csv de tipos, por padrão tipos.csv.
-        types_csv (str): nome do csv de saída, por padrão dados_finais.csv.
+        output_csv (str): nome do csv de saída, por padrão dados_finais.csv.
 
     Retorno:
         str: caminho relativo definindo local aonde o arquivo de saída foi salvo.
@@ -44,9 +44,8 @@ def evaluate_data(
     df3.sort_values(by="created_at", ascending=False, inplace=True)
     df3 = df3.rename(columns={"nome": "nome_tipo"})
 
-    csv_output_file = output_csv
-    df3.to_csv(csv_output_file, index=False)
-    return csv_output_file
+    df3.to_csv(output_csv, index=False)
+    return output_csv
 
 
 def generate_sql_output(
