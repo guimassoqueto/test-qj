@@ -61,16 +61,19 @@ def generate_sql_output(
     with open(csv_output_file, "r", encoding="utf-8") as csv_file:
         csv_reader = csv.DictReader(csv_file)
         header_row = csv_reader.fieldnames
+        csv_reader_length = len(csv_reader)
 
         f = open(sql_output_file_name, "a")
-
-        for row in csv_reader:
-            f.write("INSERT INTO dados_finais")
-            f.write(f'({", ".join(header_row)})')
-            f.write(" VALUES")
+        f.write("INSERT INTO dados_finais")
+        f.write(f'({", ".join(header_row)})')
+        f.write(" VALUES ")
+        
+        for i, row in enumerate(csv_reader):
             line = [f"'{row[key]}'" for key in header_row]
-            f.write(f'({", ".join(line)});\n')
-
+            if (i + 1 == csv_reader_length): f.write(f'({", ".join(line)})\n')
+            else: f.write(f'({", ".join(line)}),\n')
+            
+        f.write(";")
         f.close()
 
 
